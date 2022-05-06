@@ -92,15 +92,16 @@ IMU imu;
 void setup() 
 {
     // Populate battery parameters.
-    battery_state.design_capacity          = 2200;  // mAh
-    battery_state.power_supply_status      = 2;     // discharging
-    battery_state.power_supply_health      = 0;     // unknown
-    battery_state.power_supply_technology  = 3;     // LiPo
-    battery_state.present                  = 1;     // battery present
-    battery_state.location      = "Crawler";        // unit location
-    battery_state.serial_number = "ABC_0001";       // unit serial number
+    battstate.design_capacity          = 2200;  // mAh
+    battstate.power_supply_status      = 2;     // discharging
+    battstate.power_supply_health      = 0;     // unknown
+    battstate.power_supply_technology  = 3;     // LiPo
+    battstate.present                  = 1;     // battery present
+
+    battstate.location.data      = "Crawler";        // unit location
+    battstate.serial_number.data = "ABC_0001";       // unit serial number
   
-    battery_state.cell_voltage = new float[CELLS];  // individual cell health
+    //battstate.cell_voltage.data = new float[CELLS];  // individual cell health
     pinMode(LED_PIN, OUTPUT);
     //***********************************************************************************************
     bool imu_ok = imu.init();
@@ -118,67 +119,70 @@ void setup()
 
 void loop() 
 {
-    /      
+          
     // Battery status.
     double battVoltage = 0.0;
+
     double prevVoltage = 0.0;
 
     // Reset Power Supply Health.
-    battery_state.power_supply_health = 0;
+    battstate.power_supply_health = 0;
+  
     // Populate battery state message.
-    for (int i = 0; i < CELLS; i++)
+  
     {
       // Read raw voltage from analog pin.
-      double cellVoltage = analogRead(i) * K;
-      
+      int battVoltage = analogRead(0) * K * batt_const;
+    
       // Scale reading to full voltage.
-      cellVoltage *= cell_const[i];
-      double tmp = cellVoltage;
-      
+      //cellVoltage *= cell_const;
+      //double tmp = cellVoltage;
+    
       // Isolate current cell voltage.
-      cellVoltage -= prevVoltage;
-      battVoltage += cellVoltage;
-      prevVoltage = tmp;
-  
+      //cellVoltage -= prevVoltage;
+      //battVoltage += cellVoltage;
+      //prevVoltage = tmp;
+
       // Set current cell voltage to message.
-      battery_state.cell_voltage[i] = (float)cellVoltage;
+      battstate.voltage = (float)battVoltage;
 
       // Check if battery is attached.
-      if (battery_state.cell_voltage[i] >= 2.0)
+      if (battstate.voltage >= 2.0)
       {
-        if (battery_state.cell_voltage[i] <= 3.2)
-          battery_state.power_supply_health = 5; // Unspecified failure.
-        battery_state.present = 1;
+        if (battstate.voltage <= 3.2)
+          battstate.power_supply_health = 5; // Unspecified failure.
+        battstate.present = 1;
       }
       else
-        battery_state.present = 0;
+        battstate.present = 0;
     }
 
     // Update battery health.
-    if (battery_state.present)
+    if (battstate.present)
     {
-      battery_state.voltage = (float)battVoltage;
-      float volt = battery_state.voltage;
+      battstate.voltage = (float)battVoltage;
+      float volt = battstate.voltage;
       float low  = 3.0 * CELLS;
       float high = 4.2 * CELLS;
-      battery_state.percentage = constrain((volt - low) / (high - low), 0.0, 1.0);    
+      battstate.percentage = constrain((volt - low) / (high - low), 0.0, 1.0);    
     }
     else 
     {
-      battery_state.voltage = 0.0;
-      battery_state.percentage = 0.0;
+      battstate.voltage = 0.0;
+      battstate.percentage = 0.0;
     }
   
     // Update power supply health if not failed.
-    if (battery_state.power_supply_health == 0 && battery_state.present)
+    if (battstate.power_supply_health == 0 && battstate.present)
     {
-      if (battery_state.voltage > CELLS * 4.2)
-        battery_state.power_supply_health = 4; // overvoltage
-      else if (battery_state.voltage < CELLS * 3.0)
-        battery_state.power_supply_health = 3; // dead
+      if (battstate.voltage > CELLS * 4.2)
+        battstate.power_supply_health = 4; // overvoltage
+      else if (battstate.voltage < CELLS * 3.0)
+        battstate.power_supply_health = 3; // dead
       else
-        battery_state.power_supply_health = 1; // good 
+        battstate.power_supply_health = 1; // good 
     }
+  
     //*****************************************************************************************
     static unsigned long prev_connect_test_time;
     // check if the agent got disconnected at 10Hz
