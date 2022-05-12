@@ -40,7 +40,7 @@
 
 //Battery Monitor
 #define K           3.3/1023
-#define CELLS       3
+#define CELLS       1
 #define MAX_CELLS   3
 #define CRITICAL    0.30
 
