@@ -378,7 +378,7 @@ void publishData()
 {
     odom_msg = odometry.getData();
     imu_msg = imu.getData();
-    battery_state_msg = battery_state.getData();
+    battstate = battstate.getData();
 
     struct timespec time_stamp = getTime();
 
