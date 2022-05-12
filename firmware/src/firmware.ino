@@ -92,10 +92,10 @@ IMU imu;
 void setup() 
 {
     // Populate battery parameters.
-    battstate.design_capacity          = 2200;  // mAh
+    battstate.design_capacity          = 2500;  // mAh
     battstate.power_supply_status      = 2;     // discharging
     battstate.power_supply_health      = 0;     // unknown
-    battstate.power_supply_technology  = 3;     // LiPo
+    battstate.power_supply_technology  = 2;     // Lion
     battstate.present                  = 1;     // battery present
 
     battstate.location.data      = "Crawler";        // unit location
