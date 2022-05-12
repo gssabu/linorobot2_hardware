@@ -47,7 +47,7 @@ rcl_subscription_t battstate_subscriber;
 
 nav_msgs__msg__Odometry odom_msg;
 sensor_msgs__msg__Imu imu_msg;
-sensor_msgs__msg__BatteryState battstate;
+sensor_msgs__msg__BatteryState battstate_msg;
 geometry_msgs__msg__Twist twist_msg;
 
 rclc_executor_t executor;
@@ -378,7 +378,7 @@ void publishData()
 {
     odom_msg = odometry.getData();
     imu_msg = imu.getData();
-    battstate = battstate.getData();
+    battstate_msg = battstate.getData();
 
     struct timespec time_stamp = getTime();
 
@@ -390,7 +390,7 @@ void publishData()
 
     RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
     RCSOFTCHECK(rcl_publish(&odom_publisher, &odom_msg, NULL));
-    RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate, NULL));
+    RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate_msg, NULL));
 }
 
 void syncTime()
