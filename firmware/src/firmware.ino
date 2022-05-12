@@ -378,7 +378,7 @@ void publishData()
 {
     odom_msg = odometry.getData();
     imu_msg = imu.getData();
-    battstate_msg = battstate.getData();
+    //battstate = battstate.getData();
 
     struct timespec time_stamp = getTime();
 
@@ -390,7 +390,7 @@ void publishData()
 
     RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
     RCSOFTCHECK(rcl_publish(&odom_publisher, &odom_msg, NULL));
-    RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate_msg, NULL));
+    RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate, NULL));
 }
 
 void syncTime()
