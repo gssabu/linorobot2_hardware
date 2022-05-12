@@ -44,7 +44,7 @@
 #define MAX_CELLS   3
 #define CRITICAL    0.30
 
-#define batt_const  1.4333
+#define batt_const  1.33
 /*
 ROBOT ORIENTATION
          FRONT
