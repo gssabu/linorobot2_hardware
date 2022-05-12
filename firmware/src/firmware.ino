@@ -41,13 +41,13 @@
 
 rcl_publisher_t odom_publisher;
 rcl_publisher_t imu_publisher;
-rcl_publisher_t battery_state_publisher;
+rcl_publisher_t battstate_publisher;
 rcl_subscription_t twist_subscriber;
-rcl_subscription_t battery_state_subscriber;
+rcl_subscription_t battstate_subscriber;
 
 nav_msgs__msg__Odometry odom_msg;
 sensor_msgs__msg__Imu imu_msg;
-sensor_msgs__msg__BatteryState batterystate_msg;
+sensor_msgs__msg__BatteryState battstate;
 geometry_msgs__msg__Twist twist_msg;
 
 rclc_executor_t executor;
@@ -253,16 +253,16 @@ void createEntities()
     ));
     // create Batterystate publisher
     RCCHECK(rclc_publisher_init_default( 
-        &battery_state_publisher, 
+        &battstate_publisher, 
         &node,
-        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Battery_State),
+        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, BatteryState),
         "BatteryState"
     ));
     // create Batterystate subscribe
     RCCHECK(rclc_subscription_init_default( 
-        &battery_state_subscriber, 
+        &battstate_subscriber, 
         &node,
-        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Battery_State),
+        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, BatteryState),
         "BatteryState"
     ));
     // create twist command subscriber
@@ -302,8 +302,8 @@ void destroyEntities()
 
     rcl_publisher_fini(&odom_publisher, &node);
     rcl_publisher_fini(&imu_publisher, &node);
-    rcl_publisher_fini(&battery_state_publisher, &node);
-    rcl_subscription_fini(&battery_state_subscriber, &node);
+    rcl_publisher_fini(&battstate_publisher, &node);
+    rcl_subscription_fini(&battstate_subscriber, &node);
     rcl_subscription_fini(&twist_subscriber, &node);
     rcl_node_fini(&node);
     rcl_timer_fini(&control_timer);
@@ -390,7 +390,7 @@ void publishData()
 
     RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
     RCSOFTCHECK(rcl_publish(&odom_publisher, &odom_msg, NULL));
-    RCSOFTCHECK(rcl_publish(&battery_state_publisher, &battery_state_msg, NULL));
+    RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate, NULL));
 }
 
 void syncTime()
