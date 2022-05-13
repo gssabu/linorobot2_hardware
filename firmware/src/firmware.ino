@@ -121,9 +121,9 @@ void loop()
 {
           
     // Battery status.
+    double battRVoltage = 0.0;
     double battVoltage = 0.0;
-
-    double prevVoltage = 0.0;
+    //double prevVoltage = 0.0;
 
     // Reset Power Supply Health.
     battstate.power_supply_health = 0;
@@ -132,16 +132,16 @@ void loop()
   
     {
       // Read raw voltage from analog pin.
-      int battVoltage = analogRead(0) * K;
+      int battRVoltage = analogRead(0);
     
       // Scale reading to full voltage.
-      battVoltage *= batt_const;
-      double tmp = battVoltage;
+      battVoltage = battRVoltage*K* batt_const;
+      //double tmp = battVoltage;
     
       // Isolate current cell voltage.
-      battVoltage -= prevVoltage;
+      //battVoltage -= prevVoltage;
       //battVoltage += cellVoltage;
-      prevVoltage = tmp;
+      //prevVoltage = tmp;
 
       // Set current cell voltage to message.
       battstate.voltage = (float)battVoltage;
