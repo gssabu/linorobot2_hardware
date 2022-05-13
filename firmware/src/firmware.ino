@@ -132,16 +132,16 @@ void loop()
   
     {
       // Read raw voltage from analog pin.
-      int battVoltage = analogRead(0) * K * batt_const;
+      int battVoltage = analogRead(0) * K;
     
       // Scale reading to full voltage.
-      //cellVoltage *= cell_const;
-      //double tmp = cellVoltage;
+      battVoltage *= batt_const;
+      double tmp = battVoltage;
     
       // Isolate current cell voltage.
-      //cellVoltage -= prevVoltage;
+      battVoltage -= prevVoltage;
       //battVoltage += cellVoltage;
-      //prevVoltage = tmp;
+      prevVoltage = tmp;
 
       // Set current cell voltage to message.
       battstate.voltage = (float)battVoltage;
