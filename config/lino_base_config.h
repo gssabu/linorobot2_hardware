@@ -45,6 +45,9 @@
 #define CRITICAL    0.30
 
 #define batt_const  1.33
+
+//Ir Sensor Pin
+#define irPin       15
 /*
 ROBOT ORIENTATION
          FRONT
