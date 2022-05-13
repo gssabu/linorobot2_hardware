@@ -23,6 +23,8 @@
 #include <nav_msgs/msg/odometry.h>
 #include <sensor_msgs/msg/imu.h>
 #include <sensor_msgs/msg/battery_state.h>
+#include <sensor_msgs/msg/range.h>
+
 #include <geometry_msgs/msg/twist.h>
 #include <geometry_msgs/msg/vector3.h>
 
@@ -44,11 +46,14 @@ rcl_publisher_t imu_publisher;
 rcl_publisher_t battstate_publisher;
 rcl_subscription_t twist_subscriber;
 rcl_subscription_t battstate_subscriber;
+rcl_publisher_t range_publisher;
+rcl_subscription_t range_subscriber;
 
 nav_msgs__msg__Odometry odom_msg;
 sensor_msgs__msg__Imu imu_msg;
 sensor_msgs__msg__BatteryState battstate;
 geometry_msgs__msg__Twist twist_msg;
+sensor_msgs__msg__Range range_msg;
 
 rclc_executor_t executor;
 rclc_support_t support;
@@ -97,11 +102,17 @@ void setup()
     battstate.power_supply_health      = 0;     // unknown
     battstate.power_supply_technology  = 2;     // Lion
     battstate.present                  = 1;     // battery present
-
     battstate.location.data      = "Linorobot2";        // unit location
       
-        pinMode(LED_PIN, OUTPUT);
+    // Populate IR parameters.
+    range_msg.radiation_type = 1;
+    range_msg.field_of_view = 0.6;
+    //range_msg.min_range = 0.02;
+    range_msg.min_range == range_msg.max_range;
+    
     //***********************************************************************************************
+    pinMode(LED_PIN, OUTPUT);
+    
     bool imu_ok = imu.init();
     if(!imu_ok)
     {
@@ -116,6 +127,40 @@ void setup()
 }
 
 void loop() 
+{
+    ReadBatt();   
+    ReadIr();
+    //*****************************************************************************************
+    static unsigned long prev_connect_test_time;
+    // check if the agent got disconnected at 10Hz
+    if(millis() - prev_connect_test_time >= 100)
+    {
+        prev_connect_test_time = millis();
+        // check if the agent is connected
+        if(RMW_RET_OK == rmw_uros_ping_agent(10, 2))
+        {
+            // reconnect if agent got disconnected or haven't at all
+            if (!micro_ros_init_successful) 
+            {
+                createEntities();
+            } 
+        } 
+        else if(micro_ros_init_successful)
+        {
+            // stop the robot when the agent got disconnected
+            fullStop();
+            // clean up micro-ROS components
+            destroyEntities();
+        }
+    }
+    
+    if(micro_ros_init_successful)
+    {
+        rclc_executor_spin_some(&executor, RCL_MS_TO_NS(10));
+    }
+}
+
+void ReadBatt() 
 {
           
     // Battery status.
@@ -174,35 +219,15 @@ void loop()
       else
         battstate.power_supply_health = 1; // good 
     }
-  
-    //*****************************************************************************************
-    static unsigned long prev_connect_test_time;
-    // check if the agent got disconnected at 10Hz
-    if(millis() - prev_connect_test_time >= 100)
-    {
-        prev_connect_test_time = millis();
-        // check if the agent is connected
-        if(RMW_RET_OK == rmw_uros_ping_agent(10, 2))
-        {
-            // reconnect if agent got disconnected or haven't at all
-            if (!micro_ros_init_successful) 
-            {
-                createEntities();
-            } 
-        } 
-        else if(micro_ros_init_successful)
-        {
-            // stop the robot when the agent got disconnected
-            fullStop();
-            // clean up micro-ROS components
-            destroyEntities();
-        }
-    }
     
-    if(micro_ros_init_successful)
-    {
-        rclc_executor_spin_some(&executor, RCL_MS_TO_NS(10));
-    }
+}
+
+void ReadIr() {
+  int ir = HIGH;
+  ir = digitalRead(irPin);
+  
+  range_msg.range = (float)ir;
+   
 }
 
 void controlCallback(rcl_timer_t * timer, int64_t last_call_time) 
@@ -257,6 +282,20 @@ void createEntities()
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, BatteryState),
         "BatteryState"
     ));
+    // create Range publisher
+    RCCHECK(rclc_publisher_init_default( 
+        &range_publisher, 
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
+        "Range"
+    ));
+    // create Range subscribe
+    RCCHECK(rclc_subscription_init_default( 
+        &range_subscriber, 
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
+        "Range"
+    ));    
     // create twist command subscriber
     RCCHECK(rclc_subscription_init_default( 
         &twist_subscriber, 
@@ -296,6 +335,8 @@ void destroyEntities()
     rcl_publisher_fini(&imu_publisher, &node);
     rcl_publisher_fini(&battstate_publisher, &node);
     rcl_subscription_fini(&battstate_subscriber, &node);
+    rcl_publisher_fini(&range_publisher, &node);
+    rcl_subscription_fini(&range_subscriber, &node);
     rcl_subscription_fini(&twist_subscriber, &node);
     rcl_node_fini(&node);
     rcl_timer_fini(&control_timer);
@@ -383,6 +424,7 @@ void publishData()
     RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
     RCSOFTCHECK(rcl_publish(&odom_publisher, &odom_msg, NULL));
     RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate, NULL));
+    RCSOFTCHECK(rcl_publish(&range_publisher, &range, NULL));
 }
 
 void syncTime()
