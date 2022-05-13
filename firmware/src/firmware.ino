@@ -162,7 +162,7 @@ void loop()
     {
       battstate.voltage = (float)battVoltage;
       float volt = battstate.voltage;
-      float low  = 3.0 * CELLS;
+      float low  = 3.2 * CELLS;
       float high = 4.2 * CELLS;
       battstate.percentage = constrain((volt - low) / (high - low), 0.0, 1.0);    
     }
@@ -378,7 +378,7 @@ void publishData()
 {
     odom_msg = odometry.getData();
     imu_msg = imu.getData();
-    //battstate = battstate.getData();
+    //battstate = battstate.percentage();
 
     struct timespec time_stamp = getTime();
 
