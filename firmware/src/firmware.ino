@@ -424,7 +424,7 @@ void publishData()
     RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
     RCSOFTCHECK(rcl_publish(&odom_publisher, &odom_msg, NULL));
     RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate, NULL));
-    RCSOFTCHECK(rcl_publish(&range_publisher, &range, NULL));
+    RCSOFTCHECK(rcl_publish(&range_publisher, &range_msg, NULL));
 }
 
 void syncTime()
