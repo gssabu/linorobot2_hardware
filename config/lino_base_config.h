@@ -39,7 +39,7 @@
 #define K_D 0.5                             // D constant
 
 //Battery Monitor
-#define K           3.3/1023
+#define K           0.003258
 #define CELLS       1
 #define MAX_CELLS   3
 #define CRITICAL    0.30
