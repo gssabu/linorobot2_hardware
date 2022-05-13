@@ -98,11 +98,9 @@ void setup()
     battstate.power_supply_technology  = 2;     // Lion
     battstate.present                  = 1;     // battery present
 
-    battstate.location.data      = "Crawler";        // unit location
-    battstate.serial_number.data = "ABC_0001";       // unit serial number
-  
-    //battstate.cell_voltage.data = new float[CELLS];  // individual cell health
-    pinMode(LED_PIN, OUTPUT);
+    battstate.location.data      = "Linorobot2";        // unit location
+      
+        pinMode(LED_PIN, OUTPUT);
     //***********************************************************************************************
     bool imu_ok = imu.init();
     if(!imu_ok)
@@ -123,7 +121,6 @@ void loop()
     // Battery status.
     double battRVoltage = 0.0;
     double battVoltage = 0.0;
-    //double prevVoltage = 0.0;
 
     // Reset Power Supply Health.
     battstate.power_supply_health = 0;
@@ -136,12 +133,7 @@ void loop()
     
       // Scale reading to full voltage.
       battVoltage = battRVoltage*K* batt_const;
-      //double tmp = battVoltage;
-    
-      // Isolate current cell voltage.
-      //battVoltage -= prevVoltage;
-      //battVoltage += cellVoltage;
-      //prevVoltage = tmp;
+ 
 
       // Set current cell voltage to message.
       battstate.voltage = (float)battVoltage;
