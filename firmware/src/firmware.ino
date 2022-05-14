@@ -106,8 +106,8 @@ void setup()
       
     // Populate IR parameters.
     range_msg.radiation_type = 1;
-    range_msg.field_of_view = 0.6;
-    //range_msg.min_range = 0.02;
+    range_msg.field_of_view = 0.25;
+    range_msg.min_range = 0.02;
     range_msg.min_range == range_msg.max_range;
     
     //***********************************************************************************************
