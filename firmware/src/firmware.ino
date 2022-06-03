@@ -51,7 +51,7 @@ rcl_subscription_t range_subscriber;
 
 nav_msgs__msg__Odometry odom_msg;
 sensor_msgs__msg__Imu imu_msg;
-sensor_msgs__msg__BatteryState battstate;
+sensor_msgs__msg__BatteryState battstate_msg;
 geometry_msgs__msg__Twist twist_msg;
 sensor_msgs__msg__Range range_msg;
 
@@ -94,22 +94,30 @@ Kinematics kinematics(
 Odometry odometry;
 IMU imu;
 
-void setup() 
-{
+void battstate_msg_init(sensor_msgs::msg::BatteryState &battstate_msg, char *frame_id_name)
+{   
     // Populate battery parameters.
-    battstate.design_capacity          = 2500;  // mAh
-    battstate.power_supply_status      = 2;     // discharging
-    battstate.power_supply_health      = 0;     // unknown
-    battstate.power_supply_technology  = 2;     // Lion
-    battstate.present                  = 1;     // battery present
-    battstate.location.data      = "Linorobot2";        // unit location
-      
+    battstate_msg.header.frame_id          = frame_id_name;
+    battstate_msg.design_capacity          = 2500;  // mAh
+    battstate_msg.power_supply_status      = 2;     // discharging
+    battstate_msg.power_supply_health      = 0;     // unknown
+    battstate_msg.power_supply_technology  = 2;     // Lion
+    battstate_msg.present                  = 1;     // battery present
+    battstate_msg.location.data            = "Linorobot2";        // unit location
+}      
+
+void range_msg_init(sensor_msgs::msg::Range &range_msg, char *frame_id_name)
+{    
     // Populate IR parameters.
-    range_msg.radiation_type = 1;
+    range_msg.radiation_type = sensor_msgs::msg::Range::INFRARED;
+    range_msg.header.frame_id = frame_id_name;
     range_msg.field_of_view = 0.25;
     range_msg.min_range = 0.02;
-    range_msg.min_range == range_msg.max_range;
-    
+    range_msg.max_range = 0.02;
+}
+
+void setup() 
+{   
     //***********************************************************************************************
     pinMode(LED_PIN, OUTPUT);
     
@@ -121,15 +129,12 @@ void setup()
             flashLED(3);
         }
     }
-
     micro_ros_init_successful = false;
     set_microros_transports();
 }
 
 void loop() 
 {
-    ReadBatt();   
-    ReadIr();
     //*****************************************************************************************
     static unsigned long prev_connect_test_time;
     // check if the agent got disconnected at 10Hz
@@ -168,7 +173,7 @@ void ReadBatt()
     double battVoltage = 0.0;
 
     // Reset Power Supply Health.
-    battstate.power_supply_health = 0;
+    battstate_msg.power_supply_health = 0;
   
     // Populate battery state message.
   
@@ -181,43 +186,43 @@ void ReadBatt()
  
 
       // Set current cell voltage to message.
-      battstate.voltage = (float)battVoltage;
+      battstate_msg.voltage = (float)battVoltage;
 
       // Check if battery is attached.
-      if (battstate.voltage >= 2.0)
+      if (battstate_msg.voltage >= 2.0)
       {
-        if (battstate.voltage <= 3.2)
-          battstate.power_supply_health = 5; // Unspecified failure.
-        battstate.present = 1;
+        if (battstate_msg.voltage <= 3.2)
+          battstate_msg.power_supply_health = 5; // Unspecified failure.
+        battstate_msg.present = 1;
       }
       else
-        battstate.present = 0;
+        battstate_msg.present = 0;
     }
 
     // Update battery health.
-    if (battstate.present)
+    if (battstate_msg.present)
     {
-      battstate.voltage = (float)battVoltage;
-      float volt = battstate.voltage;
+      battstate_msg.voltage = (float)battVoltage;
+      float volt = battstate_msg.voltage;
       float low  = 3.2 * CELLS;
       float high = 4.2 * CELLS;
-      battstate.percentage = constrain((volt - low) / (high - low), 0.0, 1.0);    
+      battstate_msg.percentage = constrain((volt - low) / (high - low), 0.0, 1.0);    
     }
     else 
     {
-      battstate.voltage = 0.0;
-      battstate.percentage = 0.0;
+      battstate_msg.voltage = 0.0;
+      battstate_msg.percentage = 0.0;
     }
   
     // Update power supply health if not failed.
-    if (battstate.power_supply_health == 0 && battstate.present)
+    if (battstate_msg.power_supply_health == 0 && battstate_msg.present)
     {
-      if (battstate.voltage > CELLS * 4.2)
-        battstate.power_supply_health = 4; // overvoltage
-      else if (battstate.voltage < CELLS * 3.0)
-        battstate.power_supply_health = 3; // dead
+      if (battstate_msg.voltage > CELLS * 4.2)
+        battstate_msg.power_supply_health = 4; // overvoltage
+      else if (battstate_msg.voltage < CELLS * 3.0)
+        battstate_msg.power_supply_health = 3; // dead
       else
-        battstate.power_supply_health = 1; // good 
+        battstate_msg.power_supply_health = 1; // good 
     }
     
 }
@@ -246,6 +251,8 @@ void twistCallback(const void * msgin)
 
     prev_cmd_time = millis();
 }
+
+
 
 void createEntities()
 {
@@ -276,11 +283,11 @@ void createEntities()
         "BatteryState"
     ));
     // create Batterystate subscribe
-    RCCHECK(rclc_subscription_init_default( 
+    /*RCCHECK(rclc_subscription_init_default( 
         &battstate_subscriber, 
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, BatteryState),
-        "BatteryState"
+        "BatteryState"*/
     ));
     // create Range publisher
     RCCHECK(rclc_publisher_init_default( 
@@ -290,11 +297,11 @@ void createEntities()
         "Range"
     ));
     // create Range subscribe
-    RCCHECK(rclc_subscription_init_default( 
+    /*RCCHECK(rclc_subscription_init_default( 
         &range_subscriber, 
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
-        "Range"
+        "Range"*/
     ));    
     // create twist command subscriber
     RCCHECK(rclc_subscription_init_default( 
@@ -334,9 +341,9 @@ void destroyEntities()
     rcl_publisher_fini(&odom_publisher, &node);
     rcl_publisher_fini(&imu_publisher, &node);
     rcl_publisher_fini(&battstate_publisher, &node);
-    rcl_subscription_fini(&battstate_subscriber, &node);
+   # rcl_subscription_fini(&battstate_subscriber, &node);
     rcl_publisher_fini(&range_publisher, &node);
-    rcl_subscription_fini(&range_subscriber, &node);
+   # rcl_subscription_fini(&range_subscriber, &node);
     rcl_subscription_fini(&twist_subscriber, &node);
     rcl_node_fini(&node);
     rcl_timer_fini(&control_timer);
@@ -411,7 +418,7 @@ void publishData()
 {
     odom_msg = odometry.getData();
     imu_msg = imu.getData();
-    //battstate = battstate.percentage();
+    battstate_msg = battstate.getData();
 
     struct timespec time_stamp = getTime();
 
@@ -420,10 +427,16 @@ void publishData()
 
     imu_msg.header.stamp.sec = time_stamp.tv_sec;
     imu_msg.header.stamp.nanosec = time_stamp.tv_nsec;
+    
+    battstate_msg.header.stamp.sec = time_stamp.tv_sec;
+    battstate_msg.header.stamp.nanosec = time_stamp.tv_nsec;
+    
+    range_msg.header.stamp.sec = time_stamp.tv_sec;
+    range_msg.header.stamp.nanosec = time_stamp.tv_nsec;
 
     RCSOFTCHECK(rcl_publish(&imu_publisher, &imu_msg, NULL));
     RCSOFTCHECK(rcl_publish(&odom_publisher, &odom_msg, NULL));
-    RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate, NULL));
+    RCSOFTCHECK(rcl_publish(&battstate_publisher, &battstate_msg, NULL));
     RCSOFTCHECK(rcl_publish(&range_publisher, &range_msg, NULL));
 }
 
