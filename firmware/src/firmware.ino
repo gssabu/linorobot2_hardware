@@ -167,6 +167,8 @@ void loop()
                 ReadBatt();
                 ReadIr();
             } 
+            ReadBatt();
+            ReadIr();
         } 
         else if(micro_ros_init_successful)
         {
