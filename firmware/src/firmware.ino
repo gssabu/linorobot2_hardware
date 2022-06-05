@@ -140,7 +140,7 @@ void setup()
     battstate_msg.present                  = 1;     // battery present
     battstate_msg.location.data            = "Linorobot2";        // unit location
     
-    range_msg.radiation_type = sensor_msgs::msg::Range::INFRARED;
+    range_msg.radiation_type.data = sensor_msgs::msg::Range::INFRARED;
     range_msg.header.frame_id.data = "/base_link";
     range_msg.field_of_view = 0.25;
     range_msg.min_range = 0.02;
