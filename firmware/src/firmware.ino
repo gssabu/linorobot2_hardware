@@ -167,8 +167,7 @@ void loop()
                 ReadBatt();
                 ReadIr();
             } 
-            ReadBatt();
-            ReadIr();
+            
         } 
         else if(micro_ros_init_successful)
         {
@@ -177,6 +176,8 @@ void loop()
             // clean up micro-ROS components
             destroyEntities();
         }
+        ReadBatt();
+        ReadIr();
     }
     
     if(micro_ros_init_successful)
