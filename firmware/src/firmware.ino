@@ -341,9 +341,9 @@ void destroyEntities()
     rcl_publisher_fini(&odom_publisher, &node);
     rcl_publisher_fini(&imu_publisher, &node);
     rcl_publisher_fini(&battstate_publisher, &node);
-   # rcl_subscription_fini(&battstate_subscriber, &node);
+   // rcl_subscription_fini(&battstate_subscriber, &node);
     rcl_publisher_fini(&range_publisher, &node);
-   # rcl_subscription_fini(&range_subscriber, &node);
+   // rcl_subscription_fini(&range_subscriber, &node);
     rcl_subscription_fini(&twist_subscriber, &node);
     rcl_node_fini(&node);
     rcl_timer_fini(&control_timer);
