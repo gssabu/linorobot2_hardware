@@ -278,7 +278,7 @@ void createEntities()
     // create Batterystate publisher
     RCCHECK(rclc_publisher_init_default( 
         &battstate_publisher, 
-        &node,
+        &battstate_msg_init,
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, BatteryState),
         "BatteryState"
     ));
@@ -292,7 +292,7 @@ void createEntities()
     // create Range publisher
     RCCHECK(rclc_publisher_init_default( 
         &range_publisher, 
-        &node,
+        &range_msg_init,
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
         "Range"
     ));
@@ -418,7 +418,7 @@ void publishData()
 {
     odom_msg = odometry.getData();
     imu_msg = imu.getData();
-    battstate_msg = battstate.getData();
+    //battstate_msg = battstate.getData();
 
     struct timespec time_stamp = getTime();
 
