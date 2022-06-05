@@ -132,7 +132,7 @@ void setup()
     micro_ros_init_successful = false;
     set_microros_transports();
     
-    battstate_msg.header.frame_id          = "";
+    battstate_msg.header.frame_id.data          = "";
     battstate_msg.design_capacity          = 2500;  // mAh
     battstate_msg.power_supply_status      = 2;     // discharging
     battstate_msg.power_supply_health      = 0;     // unknown
@@ -141,7 +141,7 @@ void setup()
     battstate_msg.location.data            = "Linorobot2";        // unit location
     
     range_msg.radiation_type = sensor_msgs::msg::Range::INFRARED;
-    range_msg.header.frame_id = "/base_link";
+    range_msg.header.frame_id.data = "/base_link";
     range_msg.field_of_view = 0.25;
     range_msg.min_range = 0.02;
     range_msg.max_range = 0.02;
