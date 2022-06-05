@@ -287,8 +287,8 @@ void createEntities()
         &battstate_subscriber, 
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, BatteryState),
-        "BatteryState"*/
-    ));
+        "BatteryState"
+    ));*/
     // create Range publisher
     RCCHECK(rclc_publisher_init_default( 
         &range_publisher, 
@@ -301,8 +301,8 @@ void createEntities()
         &range_subscriber, 
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Range),
-        "Range"*/
-    ));    
+        "Range"
+    )); */   
     // create twist command subscriber
     RCCHECK(rclc_subscription_init_default( 
         &twist_subscriber, 
