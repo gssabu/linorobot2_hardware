@@ -142,11 +142,11 @@ void setup()
     
    // range_msg.header.stamp = rospy.Time.now()
     range_msg.radiation_type = 1;
-    range_msg.header.frame_id.data = "base_link";
-    range_msg.field_of_view = 0.25;
-    range_msg.min_range = -0.01;
-    range_msg.max_range = 1.0;
-    //range_msg.min_range = range_msg.max_range;
+    range_msg.header.frame_id.data = "range_link";
+    range_msg.field_of_view = 0.2;
+    //range_msg.min_range = -0.01;
+    //range_msg.max_range = 1.0;
+    range_msg.min_range = range_msg.max_range;
     
     
 }
@@ -252,10 +252,18 @@ void ReadBatt()
 
 void ReadIr() {
   float ir = HIGH;
-  ir = digitalRead(irPin);
+  iread = digitalRead(irPin);
   
-  range_msg.range = ir;
-   
+  if (iread > 0)
+  {
+      ir = (INFINITY) ;
+  	 // Serial.println(bs);
+  }
+  else
+  { 
+       ir = (-INFINITY) ;
+  }
+  range_msg.range = ir; 
 }
 
 void controlCallback(rcl_timer_t * timer, int64_t last_call_time) 
