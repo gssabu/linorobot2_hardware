@@ -142,10 +142,11 @@ void setup()
     
    // range_msg.header.stamp = rospy.Time.now()
     range_msg.radiation_type = INFRARED;
-    range_msg.header.frame_id.data = "/base_link";
+    range_msg.header.frame_id.data = "/range_link";
     range_msg.field_of_view = 0.25;
-    range_msg.min_range = 0.02;
-    range_msg.max_range = 0.02;
+    //range_msg.min_range = 0.02;
+    //range_msg.max_range = 0.02;
+    range_msg.min_range = range_msg.max_range;
     
     
 }
