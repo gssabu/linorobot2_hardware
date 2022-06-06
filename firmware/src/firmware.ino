@@ -142,7 +142,7 @@ void setup()
     
    // range_msg.header.stamp = rospy.Time.now()
     range_msg.radiation_type = 1;
-    range_msg.header.frame_id.data = "range_link";
+    range_msg.header.frame_id.data = "base_footprint";
     range_msg.field_of_view = 0.2;
     //range_msg.min_range = -0.01;
     //range_msg.max_range = 1.0;
