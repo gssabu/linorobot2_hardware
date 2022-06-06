@@ -252,18 +252,18 @@ void ReadBatt()
 
 void ReadIr() {
   float ir = HIGH;
-  iread = digitalRead(irPin);
+  ir = digitalRead(irPin);
   
   if (iread > 0)
   {
-      ir = (INFINITY) ;
+      range_msg.range = (INFINITY) ;
   	 // Serial.println(bs);
   }
   else
   { 
-       ir = (-INFINITY) ;
+       range_msg.range = (-INFINITY) ;
   }
-  range_msg.range = ir; 
+  //range_msg.range = ir; 
 }
 
 void controlCallback(rcl_timer_t * timer, int64_t last_call_time) 
