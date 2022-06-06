@@ -254,7 +254,7 @@ void ReadIr() {
   float ir = HIGH;
   ir = digitalRead(irPin);
   
-  if (iread > 0)
+  if (ir > 0)
   {
       range_msg.range = (INFINITY) ;
   	 // Serial.println(bs);
