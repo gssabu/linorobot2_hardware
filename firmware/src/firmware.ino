@@ -140,7 +140,8 @@ void setup()
     battstate_msg.present                  = 1;     // battery present
     battstate_msg.location.data            = "Linorobot2";        // unit location
     
-    range_msg.radiation_type = 1;
+   // range_msg.header.stamp = rospy.Time.now()
+    range_msg.radiation_type = INFRARED;
     range_msg.header.frame_id.data = "/base_link";
     range_msg.field_of_view = 0.25;
     range_msg.min_range = 0.02;
@@ -164,8 +165,7 @@ void loop()
             if (!micro_ros_init_successful) 
             {
                 createEntities();
-                ReadBatt();
-                ReadIr();
+                
             } 
             
         } 
@@ -176,14 +176,15 @@ void loop()
             // clean up micro-ROS components
             destroyEntities();
         }
-        ReadBatt();
-        ReadIr();
+        
     }
     
     if(micro_ros_init_successful)
     {
         rclc_executor_spin_some(&executor, RCL_MS_TO_NS(10));
     }
+    ReadBatt();
+    ReadIr();
 }
 
 void ReadBatt() 
@@ -249,10 +250,10 @@ void ReadBatt()
 }
 
 void ReadIr() {
-  int ir = HIGH;
+  float ir = HIGH;
   ir = digitalRead(irPin);
   
-  range_msg.range = (float)ir;
+  range_msg.range = ir;
    
 }
 
