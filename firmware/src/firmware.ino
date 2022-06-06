@@ -141,7 +141,7 @@ void setup()
     battstate_msg.location.data            = "Linorobot2";        // unit location
     
    // range_msg.header.stamp = rospy.Time.now()
-    range_msg.radiation_type = INFRARED;
+    range_msg.radiation_type = 1;
     range_msg.header.frame_id.data = "/range_link";
     range_msg.field_of_view = 0.25;
     //range_msg.min_range = 0.02;
