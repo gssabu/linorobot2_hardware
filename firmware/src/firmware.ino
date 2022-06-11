@@ -141,11 +141,12 @@ void setup()
     battstate_msg.location.data            = "Linorobot2";        // unit location
     
    // range_msg.header.stamp = rospy.Time.now()
+    char irframeid[] = "range_link";
     range_msg.radiation_type = 1;
-    range_msg.header.frame_id.data = "base_footprint";
+    range_msg.header.frame_id = irframeid;
     range_msg.field_of_view = 0.2;
     //range_msg.min_range = -0.01;
-    //range_msg.max_range = 1.0;
+    range_msg.max_range = 1.0;
     range_msg.min_range = range_msg.max_range;
     
     
@@ -252,12 +253,12 @@ void ReadBatt()
 
 void ReadIr() {
   float ir;
-  float iread = digitalRead(irPin);
+  float irRead = digitalRead(irPin);
   
-  if (iread > 0)
+  if (irRead > 0)
   {
       ir = (INFINITY) ;
-  	 // Serial.println(bs);
+  	 // Serial.println(ir);
   }
   else
   { 
